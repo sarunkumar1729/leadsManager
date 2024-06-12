@@ -1,0 +1,191 @@
+{% extends 'admin/base.html' %} {% block content %}
+
+<!-- user details  -->
+<a href="{% url 'create_user' %}" class="btn btn-primary m-2">CREATE A NEW USER</a>
+<div class="row">
+  <div class="col-md-6">
+    <p><b>Super users</b></p>
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>NAME</th>
+        <th>TIME</th>
+      </tr>
+      {% for sup in superusers %}
+      <tr>
+        <td>{{sup.username}}</td>
+        <td>
+            {% if sup.last_login %} 
+                  {{user.last_login}} 
+            {% else %}
+                  No login yet 
+            {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="col-md-6">
+    <p><b>Counsellors</b></p>
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>NAME</th>
+        <th>CENTER</th>
+        <th>LAST LOGIN</th>
+        <th>ACTION</th>
+        <th>STATUS</th>
+        <th>TRANSFER DATA</th>
+      </tr>
+      {% for user in users %}
+      <tr>
+        <td>{{user.user.username}}</td>
+        <td>{{user.center}}</td>
+        <td>
+          {% if user.user.last_login %}
+            {{user.user.last_login}} 
+          {% else %} 
+            No login yet 
+          {% endif%}
+        </td>
+        <td>
+          {% if user.status %}
+          <!-- <a
+            href="#"
+            onclick="confirmSuspend({{ user.id }});"
+            class="btn btn-danger"
+            >SUSPEND</a
+          > -->
+          <a href="{% url 'suspend_user' user.id %}" class="btn btn-danger">SUSPEND</a>
+          {% else %}
+          <a href="{% url 'activate_user' user.id %}" class="btn btn-success">ACTIVATE</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if user.status %}
+          <span style="color: green">Active</span>
+          {% else %}
+          <span style="color: red">Suspended</span>
+          {% endif %}
+        </td>
+        <td>
+          <a class="btn btn-warning">TRANSFER DATA</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<!-- user details end here  -->
+
+
+<!-- login details  -->
+
+<p><b>Login details of users</b></p>
+<table class="table table-bordered table-striped">
+  <tr>
+    <th>USER</th>
+    <th>TIME</th>
+    <th>BROWSER</th>
+    <th>BROWSER VERSION</th>
+    <th>OS</th>
+    <th>OS VERSION</th>
+    <th>DEVICE</th>
+    <th>DEVICE TYPE</th>
+  </tr>
+  {% for login in login_details %}
+  <tr>
+    <td>{{login.user.username}}</td>
+    <td>{{login.time}}</td>
+    <td>{{login.browser}}</td>
+    <td>{{login.browser_version}}</td>
+    <td>{{login.os}}</td>
+    <td>{{login.os_version}}</td>
+    <td>{{login.device}}</td>
+    <td>
+      {% if login.is_mobile %}
+        Mobile
+      {% elif login.is_tablet %}
+        Tablet
+      {% elif login.is_pc %}
+        PC
+      {% elif login.is_bot %}
+        Bot
+      {% else %}
+        Unidentified
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- login details end here  -->
+
+<script>
+  // confirmation for suspending user
+  function confirmSuspend(user_id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure want to suspend the user ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, suspend it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`/suspend_user/${user_id}/`, {
+          // Replace `/delete-lead-url/${leadId}/` with your actual delete URL pattern
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"), // Include CSRF token for security
+          },
+          body: JSON.stringify({}),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              Swal.fire({
+                title: "Suspended!",
+                text: "the user account is suspended.",
+                icon: "success",
+              }).then(() => {
+                window.location.href = "/admin_home/"; // Redirect to leads page
+              });
+            } else {
+              Swal.fire({
+                title: "Error!",
+                text: data.message,
+                icon: "error",
+              });
+            }
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: "Error!",
+              text: "An error occurred while deleting the item.",
+              icon: "error",
+            });
+            console.error("Error:", error);
+          });
+      }
+    });
+  }
+
+  // Function to get the CSRF token from the cookies
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'user/base.html' %} {% block content %}
+<style>
+  .table-responsive {
+    overflow-x: auto;
+  }
+  .table thead th {
+    white-space: nowrap; /* Prevent table header from wrapping */
+  }
+</style>
+<a href="{% url 'add_lead' %}" class="btn btn-primary">ADD LEAD</a>
+<!-- table  -->
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>NO</th>
+        <th>NAME</th>
+        <th>DATE</th>
+        <th>SOURCE OF LEAD</th>
+        <th>COUNSELLOR</th>
+        <th>MODE</th>
+        <th>STATUS</th>
+        <th>JOINING CENTER</th>
+        <th>COURSE</th>
+        <th>EDUCATION BACKGROUND</th>
+        <th>MAIN</th>
+        <th>CS BACKGROUND</th>
+        <th>EMPLOYED</th>
+        <th>JOINING MONTH</th>
+        <th>ADDITIONAL NOTES</th>
+        <th>INITIAL RESPONSE</th>
+        <th>FIRST FOLLOW UP</th>
+        <th>DATE</th>
+        <th>SECOND FOLLOW UP</th>
+        <th>DATE</th>
+        <th>THIRD FOLLOW UP</th>
+        <th>DATE</th>
+        <th colspan="2">ACTION</th>
+        <th>LAST EDITED</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lead in leads %}
+      <tr>
+        <td>{{lead.name}}</td>
+        <td>{{lead.phone_number}}</td>
+        <td>{{lead.date}}</td>
+        <td>{{lead.source_of_lead}}</td>
+        <td>{{lead.counsellor}}</td>
+        <td>{{lead.mode}}</td>
+        <td>{{lead.status}}</td>
+        <td>{{lead.joining_centre}}</td>
+        <td>{{lead.course}}</td>
+        <td>{{lead.education_background}}</td>
+        <td>{{lead.main}}</td>
+        <td>{% if lead.cs_background %} Yes {% else %} No {% endif %}</td>
+        <td>{% if lead.employed %} Yes {% else %} No {% endif %}</td>
+        <td>{{lead.joining_month}}</td>
+        <td>{{lead.additional_notes}}</td>
+        <td>{{lead.initial_response}}</td>
+        <td>{{lead.first_follow_up}}</td>
+        <td>{{lead.first_follow_up_date}}</td>
+        <td>{{lead.second_follow_up}}</td>
+        <td>{{lead.second_follow_up_date}}</td>
+        <td>{{lead.third_follow_up}}</td>
+        <td>{{lead.third_follow_up_date}}</td>
+        <td>
+          <a href="{% url 'edit_lead' lead.id %}" class="btn btn-primary"
+            >EDIT</a
+          >
+        </td>
+        <td>
+            <a href="#" onclick="confirmDelete({{ lead.id }});" class="btn btn-danger">Delete</a>
+        </td>
+        <td>{{lead.last_modified}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+ function confirmDelete(leadId) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`/delete-lead/${leadId}/`, {  // Replace `/delete-lead-url/${leadId}/` with your actual delete URL pattern
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token for security
+          },
+          body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success"
+            }).then(() => {
+              window.location.href = '/leads/';  // Redirect to leads page
+            });
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: data.message,
+              icon: "error"
+            });
+          }
+        })
+        .catch(error => {
+          Swal.fire({
+            title: "Error!",
+            text: "An error occurred while deleting the item.",
+            icon: "error"
+          });
+          console.error('Error:', error);
+        });
+      }
+    });
+  }
+
+  // Function to get the CSRF token from the cookies
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+      <div>
+      <form method="POST" action="{% url 'save_edited' %}">
+            {% csrf_token %}
+
+            <div class="row">
+            <div class="col-md-6 p-5">
+            <div class="form-group m-3">
+                  <label for="name">Name</label>
+                  <input class='form-control' type="text" id="name" name="name" value="{{lead.name}}">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="phone">Phone</label>
+            <input class='form-control' type="text" id="phone" name="phone" value="{{lead.phone_number}}">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="date">Date</label>
+            <p>{{lead.date}}</p>
+            <input class='form-control' type="date" id="date" name="date">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="source">Source of lead</label>
+            <select class='form-control' name="source" id="source">
+                        <option value="other counsellor" {% if lead.source_of_lead == 'other counsellor' %}selected{% endif %}>other counsellor</option>
+                        <option value="direct call" {% if lead.source_of_lead == 'direct call' %}selected{% endif %}>direct call</option>
+                        <option value="whatsapp" {% if lead.source_of_lead == 'whatsapp' %}selected{% endif %}>whatsapp</option>
+                        <option value="instagram" {% if lead.source_of_lead == 'instagram' %}selected{% endif %}>instagram</option>
+                        <option value="direct walkin" {% if lead.source_of_lead == 'direct walkin' %}selected{% endif %}>direct walkin</option>
+                        <option value="leads list" {% if lead.source_of_lead == 'leads list' %}selected{% endif %}>leads list</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="mode">Mode</label>
+            <select class='form-control' name="mode" id="mode">
+                        <option value="online" {% if lead.mode == 'online' %}selected{% endif %}>online</option>
+                        <option value="offline" {% if lead.mode == 'offline' %}selected{% endif %}>offline</option>
+            </select>
+            </div>
+            
+            <div class="form-group m-3">
+            <label for="status">Status</label>
+            <select class='form-control' name="status" id="status">
+                        <option value="not intrested" {% if lead.status == 'not intrested' %}selected{% endif %}>not intrested</option>
+                        <option value="batch confirmed" {% if lead.status == 'batch confirmed' %}selected{% endif %}>batch confirmed</option>
+                        <option value="cold" {% if lead.status == 'cold' %}selected{% endif %}>cold</option>
+                        <option value="warm" {% if lead.status == 'warm' %}selected{% endif %}>warm</option>
+                        <option value="registration fee paid" {% if lead.status == 'registration fee paid' %}selected{% endif %}>registration fee paid</option>
+                        <option value="demo requested" {% if lead.status == 'demo requested' %}selected{% endif %}>demo requested</option>
+                        <option value="demo provided" {% if lead.status == 'demo provided' %}selected{% endif %}>demo provided</option>
+                        <option value="next year" {% if lead.status == 'next year' %}>selected{% endif %}</option>
+
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="joining center">Joining center</label>
+            <select class='form-control' name="joining_center" id="joining_center">
+                        <option value="kochi" {% if lead.joining_centre == 'kochi' %}selected{% endif %}>kochi</option>
+                        <option value="calicut" {% if lead.joining_centre == 'calicut' %}selected{% endif %}>calicut</option>
+                        <option value="palakkad" {% if lead.joining_centre == 'palakkad' %}selected{% endif %}>palakkad</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="course">Course</label>
+            <select class='form-control' name="course" id="course">
+                  <option value="data science" {% if lead.course == 'data science' %} selected {% endif %}>data science</option>
+                  <option value="data analytics" {% if lead.course == 'data analytics' %}selected{% endif %}>data analytics</option>
+                  <option value="business analytics" {% if lead.course == 'business analytics' %}selected{% endif %}>business analytics</option>
+                  <option value="python fullstack" {% if lead.course == 'python fullstack' %}selected{% endif %}>python fullstack</option>
+                  <option value="software testing" {% if lead.course == 'software testing' %}selected{% endif %}>software testing</option>
+                  <option value="MERN stack" {% if lead.course == 'MERN stack' %}selected{% endif %}>MERN stack</option>
+            </select>
+            </div>
+              
+
+            <div class="form-group m-3">
+            <label for="education">Eduction</label>
+            <select class='form-control' name="education" id="education">
+                  <option value="SSLC" {% if lead.education == 'SSLC' %}selected{% endif %}>SSLC</option>
+                  <option value="Plus Two" {% if lead.education == 'Plus Two' %}selected{% endif %}>Plus Two</option>
+                  <option value="Graduate" {% if lead.education == 'Graduate' %}selected{% endif %}>Graduate</option>
+                  <option value="Post Graduate" {% if lead.education == 'Post Graduate' %}selected{% endif %}>Post Graduate</option>
+                  <option value="Diploma" {% if lead.education == 'Diploma' %}selected{% endif %}>Diploma</option>
+            </select>
+            </div>
+              
+            <div class="form-group m-3">
+            <label for="stream">Stream</label>
+            <select class='form-control' name="stream" id="stream">
+                  <option value="Technical" {% if lead.main == 'Technical' %}selected{% endif %}>Technical</option>
+                  <option value="Arts" {% if lead.main == 'Arts' %}selected{% endif %}>Arts</option>
+                  <option value="Science" {% if lead.main == 'Science' %}selected{% endif %}>Science</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="cs_background">Coumputer science background</label>
+            <label for="yes">yes</label>
+            <input  type="radio" id="yes" name="cs_background" value="yes" {% if lead.cs_background %}checked{% endif %}>
+            <label for="no">no</label>
+            <input  type="radio" id="no" name="cs_background" value="no" {% if not lead.cs_background %}checked{% endif %}>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="employed">Employed</label>
+            <label for="yes">yes</label>
+            <input  type="radio" name="employed" value="yes" id="yes" {% if lead.employed %}checked{% endif %}>
+            <label for="no">no</label>
+            <input  type="radio" name="employed" value="no" id="no" {% if not lead.employed %}checked{% endif %}>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="joining_month">Joining month</label>
+            <input class='form-control' type="month" name="joining_month" value="{{lead.joining_month}}">
+            </div>
+
+            </div>
+
+            <div class="col-md-6 p-5">
+            <div class="form-group m-3">
+            <label for="additional_notes">Additional notes</label>
+            <textarea class="form-control" name="additional_notes" id="additional_notes" cols="30" rows="10" value="{{lead.additional_notes}}">{{lead.additional_notes}}</textarea>
+            </div>
+            
+            <div class="form-group m-3">
+            <label for="initial_response">Initial response</label>
+            <input class='form-control' type="text" id="initial_response" name="initial_response" value="{{lead.initial_response}}">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="first_follow_up">First follow up</label> 
+            <input class='form-control' type="text" name="first_follow_up" id="first_follow_up" value="{{lead.first_follow_up}}">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="first_follow_up_date">First follow up date</label>
+            <p>{{lead.first_follow_up_date}}</p>
+            <input class='form-control' type="date" name="first_follow_up_date" id="first_follow_up_date" value="{{lead.first_follow_up_date}}">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="second_follow_up">Second follow up</label>
+            <input class='form-control' type="text" name="second_follow_up" id="second_follow_up" value="{{lead.second_follow_up}}">
+            </div>
+
+            <div class="form-group m-3">
+            <label for="second_follow_up_date">Second follow up date</label>
+            <p>{{lead.second_follow_up_date}}</p>
+            <input class='form-control' type="date" id="second_follow_up_date" name="second_follow_up_date" value="{{lead.second_follow_up}}">
+            </div>
+            
+            <div class="form-group m-3">
+            <label for="third_follow_up">Third follow up</label>     
+            <input class='form-control' type="text" id="third_follow_up" name="third_follow_up" value="{{lead.third_follow_up}}">
+            </div>
+
+
+            <div class="form-group m-3">
+            <label for="third_follow_up_date">Third follow up date</label>
+            <p>{{lead.third_follow_up_date}}</p>
+            <input class='form-control' type="date" id="third_follow_up_date" name="third_follow_up_date" value="{{lead.third_follow_up_date}}">
+            </div>
+
+            <input class='btn btn-warning' type="submit" value="save">
+            </div>
+            </div>
+      </form>
+      </div>
+{% endblock %}

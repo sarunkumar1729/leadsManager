@@ -1,0 +1,171 @@
+{% extends 'admin/base.html' %} {% block content %}
+<div class="row">
+  <div class="col-md-6 p-3">
+      <div>
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuCounsellor"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Choose counsellor
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuCounsellor">
+            {% for counsellor in counsellors %}
+            <a class="dropdown-item" href="{% url 'user_report' counsellor.user.id %}"
+              >{{ counsellor.user.first_name }}</a
+            >
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    <!-- buttons end here  -->
+    <!-- plot  -->
+    <table class="table table-bordered table-striped mt-2">
+      <tr>
+        <th>CENTER</th>
+        <th>TOTAL LEADS</th>
+        <th>CONVERTED</th>
+      </tr>
+      <tr>
+        <td>KOCHI</td>
+        <td>{{kochi_leads}}</td>
+        <td>{{converted_kochi_leads}}</td>
+      </tr>
+      <tr>
+        <td>CALICUT</td>
+        <td>{{calicut_leads}}</td>
+        <td>{{converted_calicut_leads}}</td>
+      </tr>
+      <tr>
+        <td>PALAKKAD</td>
+        <td>{{palakkad_leads}}</td>
+        <td>{{converted_palakkad_leads}}</td>
+      </tr>
+      <tr>
+        <th>TOTAL</th>
+        <td>{{total_leads}}</td>
+        <td>{{total_converted_leads}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="col-md-6">
+    <div id="myPlot" style="width:100%;max-width:700px"></div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-6">
+    <canvas id="myChart1" style="width: 100%; max-width: 700px"></canvas>
+  </div>
+  <div class="col-md-6">
+    <canvas id="myChart" style="width: 100%; max-width: 700px"></canvas>
+  </div>
+</div>
+
+
+<script>
+  let not_intrested = '{{not_intrested}}';
+  let warm = '{{warm}}';
+  let cold = '{{cold}}';
+  let confirmed = '{{confirmed}}';
+  let reg_fee_paid = '{{registration_fee_paid}}';
+  let demo_requested = '{{demo_requested}}';
+  let demo_provided = '{{demo_provided}}';
+
+  var xValues = ["Not intrested","Warm", "Cold", "Confirmed","Registration fee paid","Demo requested","Demo provided"];
+  var yValues = [not_intrested,warm, cold, confirmed,reg_fee_paid,demo_requested,demo_provided];
+  var barColors = ["red","blue", "green", "yellow","pink","orange","purple"];
+
+  new Chart("myChart", {
+    type: "pie",
+    data: {
+      labels: xValues,
+      datasets: [
+        {
+          backgroundColor: barColors,
+          data: yValues,
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        text: "Current status of leads",
+      },
+    },
+  });
+
+
+// course wise chart 
+  let ds = '{{ds}}';
+  let da = '{{da}}';
+  let pf = '{{pf}}';
+  let ba = '{{ba}}';
+  let st = '{{st}}';
+  let ms = '{{ms}}';
+
+  var xValues1 = ["Data science","Data analytics","Python fullstack","Business analytics","Software testing","MERN stack"];
+  var yValues1 = [ds,da,pf,ba,st,ms];
+  var barColors1 = ["red","blue", "green", "yellow","pink","orange"];
+
+  new Chart("myChart1", {
+    type: "pie",
+    data: {
+      labels: xValues1,
+      datasets: [
+        {
+          backgroundColor: barColors1,
+          data: yValues1,
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        text: "Total admissions - course wise",
+      },
+    },
+  });
+
+// course wise chart end 
+
+// bar chart 
+let January = '{{january}}'
+      let february = '{{february}}'
+      let march = '{{march}}'
+      let april = '{{april}}'
+      let may = '{{may}}'
+      let june = '{{june}}'
+      let july = '{{july}}'
+      let august = '{{august}}'
+      let september = '{{september}}'
+      let october = '{{october}}'
+      let november = '{{november}}'
+      let december = '{{december}}'
+
+      const xArray = ["January", "February", "March", "April", "May","June","July","August","September","October","November","December"];
+      const yArray = [January,february,march,april,may,june,july,august,september,october,november,december];
+
+      const data = [{
+      x:xArray,
+      y:yArray,
+      type:"bar",
+      orientation:"v",
+      marker: {color:"rgba(0,0,255,0.6)"}
+      }];
+
+      const layout = {title:"Monthly admissions"};
+
+      Plotly.newPlot("myPlot", data, layout);
+      // bar chart end 
+
+
+</script>
+
+{% endblock %}

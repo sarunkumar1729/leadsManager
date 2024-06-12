@@ -1,0 +1,104 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<style>
+
+</style>
+
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="col-md-6 d-flex align-items-center justify-content-center">
+      <form class="w-75" method="POST" action="{% url 'create_user' %}" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="name">NAME</label>
+          <input class="form-control mb-3" type="text" id="name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">EMAIL</label>
+          <input class="form-control mb-3" type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="center">CENTER</label>
+          <select class="form-control mb-3" name="center" id="center" required>
+            <option value="kochi">Kochi</option>
+            <option value="calicut">Calicut</option>
+            <option value="palakkad">Palakkad</option>
+          </select>
+        </div>
+    </div>
+    <div class="col-md-6 d-flex align-items-center justify-content-center">
+        <div class="w-75">
+          <div class="form-group">
+            <label for="username">USERNAME</label>
+            <input class="form-control mb-3" type="text" id="username" name="username" required />
+            <span id="username-result"></span>
+          </div>
+          <div class="form-group">
+            <label for="password">PASSWORD</label>
+            <input class="form-control mb-3" type="password" id="password" name="password" required />
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">CONFIRM PASSWORD</label>
+            <input class="form-control mb-3" type="password" id="confirmPassword" name="confirm_password" required />
+          </div>
+          <div class="form-group">
+            <label for="user_type">USER TYPE</label>
+          </div>
+          <div class="form-group">
+            <label for="Admin">Create as Admin</label>
+            <input type="radio" name="user_type" value="admin" required>
+          </div>
+          <div class="form-group">
+            <label for="Academic counsellor">Create as academic counsellor</label>
+            <input type="radio" name="user_type" value="counsellor" required>
+          </div>
+          <input type="submit" class="btn btn-primary mt-3" />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+        document.getElementById('username').addEventListener('input', function() {
+            const username = this.value;
+            if (username) {
+                fetch(`/ajax/check-username/?username=${username}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultSpan = document.getElementById('username-result');
+                        if (data.is_taken) {
+                            resultSpan.textContent = 'Username already exists';
+                            resultSpan.className = 'is-taken';
+                            resultSpan.style.color='red'
+                        } else {
+                            resultSpan.textContent = 'Username is available';
+                            resultSpan.className = 'is-available';
+                            resultSpan.style.color = 'green';
+                        }
+                    });
+            } else {
+                document.getElementById('username-result').textContent = '';
+            }
+        });
+
+        function validateForm() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Password and confirm password are not matching !",
+                footer: '<a href="#">Why do I have this issue?</a>'
+              });                
+              return false;
+            }
+            return true;
+        }
+
+
+</script>
+{% endblock %}

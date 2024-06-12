@@ -1,0 +1,175 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+      <div>
+      <form method="POST" action="{% url 'add_lead' %}">
+            {% csrf_token %}
+
+            <div class="row">
+            <div class="col-md-6 p-5">
+            <div class="form-group m-3">
+                  <label for="name">Name</label>
+                  <input class='form-control' type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="phone">Phone</label>
+            <input class='form-control' type="text" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="date">Date</label>
+            <input class='form-control' type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="source">Source of lead</label>
+            <select class='form-control' name="source" id="source" required>
+                        <option value="other counsellor">other counsellor</option>
+                        <option value="direct call">direct call</option>
+                        <option value="whatsapp">whatsapp</option>
+                        <option value="instagram">instagram</option>
+                        <option value="direct walkin">direct walkin</option>
+                        <option value="leads list">leads list</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="mode">Mode</label>
+            <select class='form-control' name="mode" id="mode" required>
+                        <option value="online">online</option>
+                        <option value="offline">offline</option>
+            </select>
+            </div>
+            
+            <div class="form-group m-3">
+            <label for="status">Status</label>
+            <select class='form-control' name="status" id="status" required>
+                        <option value="not intrested">not intrested</option>
+                        <option value="batch confirmed">batch confirmed</option>
+                        <option value="cold">cold</option>
+                        <option value="warm">warm</option>
+                        <option value="registration fee paid">registration fee paid</option>
+                        <option value="demo requested">demo requested</option>
+                        <option value="demo provided">demo provided</option>
+                        <option value="next year">next year</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="joining center">Joining center</label>
+            <select class='form-control' name="joining_center" id="joining_center" required>
+                        <option value="kochi">kochi</option>
+                        <option value="calicut">calicut</option>
+                        <option value="palakkad">palakkad</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="course">Course</label>
+            <select class='form-control' name="course" id="course" required>
+                  <option value="data science">data science</option>
+                  <option value="data analytics">data analytics</option>
+                  <option value="business analytics">business analytics</option>
+                  <option value="python fullstack">python fullstack</option>
+                  <option value="software testing">software testing</option>
+                  <option value="MERN stack">MERN stack</option>
+            </select>
+            </div>
+              
+
+            <div class="form-group m-3">
+            <label for="education">Eduction</label>
+            <select class='form-control' name="education" id="education" required>
+                  <option value="SSLC">SSLC</option>
+                  <option value="Plus Two">Plus Two</option>
+                  <option value="Graduate">Graduate</option>
+                  <option value="Post Graduate">Post Graduate</option>
+                  <option value="Diploma">Diploma</option>
+            </select>
+            </div>
+              
+            <div class="form-group m-3">
+            <label for="stream">Stream</label>
+            <select class='form-control' name="stream" id="stream" required>
+                  <option value="Technical">Technical</option>
+                  <option value="Arts">Arts</option>
+                  <option value="Science">Science</option>
+            </select>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="cs_background">Coumputer science background</label>
+            <label for="yes"><b>YES</b></label>
+            <input  type="radio" id="yes" name="cs_background" value="yes" required>
+            <label for="no"><b>NO</b></label>
+            <input  type="radio" id="no" name="cs_background" value="no" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="employed">Employed</label>
+            <label for="yes"><b>YES</b></label>
+            <input  type="radio" name="employed" value="yes" id="yes" required>
+            <label for="no"><b>NO</b></label>
+            <input  type="radio" name="employed" value="no" id="no" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="joining_month">Joining month</label>
+            <input class='form-control' type="month" name="joining_month" required>
+            </div>
+
+            </div>
+
+            <div class="col-md-6 p-5">
+            <div class="form-group m-3">
+            <label for="additional_notes">Additional notes</label>
+            <textarea class="form-control" name="additional_notes" id="additional_notes" cols="30" rows="10" required></textarea>
+            </div>
+            
+            <div class="form-group m-3">
+            <label for="initial_response">Initial response</label>
+            <input class='form-control' type="text" id="initial_response" name="initial_response" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="first_follow_up">First follow up</label> 
+            <input class='form-control' type="text" name="first_follow_up" id="first_follow_up" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="first_follow_up_date">First follow up date</label>
+            <p>{{lead.first_follow_up_date}}</p>
+            <input class='form-control' type="date" name="first_follow_up_date" id="first_follow_up_date" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="second_follow_up">Second follow up</label>
+            <input class='form-control' type="text" name="second_follow_up" id="second_follow_up" required>
+            </div>
+
+            <div class="form-group m-3">
+            <label for="second_follow_up_date">Second follow up date</label>
+            <p>{{lead.second_follow_up_date}}</p>
+            <input class='form-control' type="date" id="second_follow_up_date" name="second_follow_up_date" required>
+            </div>
+            
+            <div class="form-group m-3">
+            <label for="third_follow_up">Third follow up</label>     
+            <input class='form-control' type="text" id="third_follow_up" name="third_follow_up" required>
+            </div>
+
+
+            <div class="form-group m-3">
+            <label for="third_follow_up_date">Third follow up date</label>
+            <p>{{lead.third_follow_up_date}}</p>
+            <input class='form-control' type="date" id="third_follow_up_date" name="third_follow_up_date" required>
+            </div>
+
+            <input class='btn btn-warning' type="submit" value="save">
+
+            </div>
+            </div>
+      </form>
+      </div>
+{% endblock %}

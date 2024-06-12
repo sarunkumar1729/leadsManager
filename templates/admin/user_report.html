@@ -1,0 +1,185 @@
+{% extends 'admin/base.html' %} {% block content %}
+<h2>Name : {{user.first_name}}</h2>
+<div class="row">
+<div class="col-md-3">
+<p>Leads summary</p>
+<table class="table table-bordered table-striped">
+      <tr>
+            <th>Not intrested</th>
+            <td>{{not_intrested}}</td>
+      </tr>
+      <tr>
+            <th>Warm</th>
+            <td>{{warm}}</td>
+      </tr>
+      <tr>
+            <th>Cold</th>
+            <td>{{cold}}</td>
+      </tr>
+      <tr>
+            <th>Batch confirmed</th>
+            <td>{{confirmed}}</td>
+      </tr>
+      <tr>
+            <th>Registration fee paid</th>
+            <td>{{registration_fee_paid}}</td>
+      </tr>
+      <tr>
+            <th>Demo requested</th>
+            <td>{{demo_requested}}</td>
+      </tr>
+      <tr>
+            <th>Demo provided</th>
+            <td>{{demo_provided}}</td>
+      </tr>
+</table>
+</div>
+
+<div class="col-md-4">
+      <div id="myPlot" style="width:100%;max-width:700px"></div>
+</div>
+
+<div class="col-md-5">
+<canvas id="myChart" style="width: 100%; max-width: 700px;padding:5px;"></canvas>
+</div>
+
+<!-- table  -->
+<div class="table-responsive p-3">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>NO</th>
+            <th>NAME</th>
+            <th>DATE</th>
+            <th>SOURCE OF LEAD</th>
+            <th>COUNSELLOR</th>
+            <th>MODE</th>
+            <th>STATUS</th>
+            <th>JOINING CENTER</th>
+            <th>COURSE</th>
+            <th>EDUCATION BACKGROUND</th>
+            <th>MAIN</th>
+            <th>CS BACKGROUND</th>
+            <th>EMPLOYED</th>
+            <th>JOINING MONTH</th>
+            <th>ADDITIONAL NOTES</th>
+            <th>INITIAL RESPONSE</th>
+            <th>FIRST FOLLOW UP</th>
+            <th>DATE</th>
+            <th>SECOND FOLLOW UP</th>
+            <th>DATE</th>
+            <th>THIRD FOLLOW UP</th>
+            <th>DATE</th>
+            <th>LAST MODIFIED</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+          <tr>
+            <td>{{lead.name}}</td>
+            <td>{{lead.phone_number}}</td>
+            <td>{{lead.date}}</td>
+            <td>{{lead.source_of_lead}}</td>
+            <td>{{lead.counsellor}}</td>
+            <td>{{lead.mode}}</td>
+            <td>{{lead.status}}</td>
+            <td>{{lead.joining_centre}}</td>
+            <td>{{lead.course}}</td>
+            <td>{{lead.education_background}}</td>
+            <td>{{lead.main}}</td>
+            <td>
+                  {% if leads.cs_background %}
+                        Yes
+                  {% else %}
+                        No
+                  {% endif %}
+            </td>
+            <td>
+                  {% if leads.employed %}
+                        Yes
+                  {% else %}
+                        No
+                  {% endif %}
+            </td>
+            <td>{{lead.joining_month}}</td>
+            <td>{{lead.additional_notes}}</td>
+            <td>{{lead.initial_response}}</td>
+            <td>{{lead.first_follow_up}}</td>
+            <td>{{lead.first_follow_up_date}}</td>
+            <td>{{lead.second_follow_up}}</td>
+            <td>{{lead.second_follow_up_date}}</td>
+            <td>{{lead.third_follow_up}}</td>
+            <td>{{lead.third_follow_up_date}}</td>
+            <td>{{lead.last_modified}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+<!-- table end  -->
+
+
+</div>
+<script>
+      let not_intrested = '{{not_intrested}}';
+      let warm = '{{warm}}';
+      let cold = '{{cold}}';
+      let confirmed = '{{confirmed}}';
+      let reg_fee_paid = '{{registration_fee_paid}}';
+      let demo_requested = '{{demo_requested}}';
+      let demo_provided = '{{demo_provided}}';
+
+      var xValues = ["Not intrested","Warm", "Cold", "Confirmed","Registration fee paid","Demo requested","Demo provided"];
+      var yValues = [not_intrested,warm, cold, confirmed,reg_fee_paid,demo_requested,demo_provided];
+      var barColors = ["red","blue", "green", "yellow","pink","orange","purple"];
+
+      new Chart("myChart", {
+        type: "pie",
+        data: {
+          labels: xValues,
+          datasets: [
+            {
+              backgroundColor: barColors,
+              data: yValues,
+            },
+          ],
+        },
+        options: {
+          title: {
+            display: true,
+            text: "Current status",
+          },
+        },
+      });
+
+
+      // bar chart 
+      let January = '{{january}}'
+      let february = '{{february}}'
+      let march = '{{march}}'
+      let april = '{{april}}'
+      let may = '{{may}}'
+      let june = '{{june}}'
+      let july = '{{july}}'
+      let august = '{{august}}'
+      let september = '{{september}}'
+      let october = '{{october}}'
+      let november = '{{november}}'
+      let december = '{{december}}'
+
+      const xArray = ["January", "February", "March", "April", "May","June","July","August","September","October","November","December"];
+      const yArray = [January,february,march,april,may,june,july,august,september,october,november,december];
+
+      const data = [{
+      x:xArray,
+      y:yArray,
+      type:"bar",
+      orientation:"v",
+      marker: {color:"rgba(0,0,255,0.6)"}
+      }];
+
+      const layout = {title:"Monthly admissions"};
+
+      Plotly.newPlot("myPlot", data, layout);
+      // bar chart end 
+</script>
+{% endblock %}

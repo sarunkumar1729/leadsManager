@@ -1,0 +1,92 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    /* margin: 0;
+    padding: 20px; */
+}
+
+.profile-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-container h1 {
+    text-align: center;
+    color: #333;
+}
+
+.profile-section {
+    margin-bottom: 20px;
+}
+
+.profile-section h2 {
+    color: #444;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.profile-section p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.profile-section p strong {
+    color: #000;
+}
+
+</style>
+
+
+    <div class="profile-container">
+        <h1>Profile</h1>
+        <div class="profile-section">
+            <h2>Personal Information</h2>
+            <p><strong>Name:</strong> {{ lead.name }}</p>
+            <p><strong>Phone Number:</strong> {{ lead.phone_number }}</p>
+            <p><strong>Date:</strong> {{ lead.date }}</p>
+        </div>
+        <div class="profile-section">
+            <h2>Lead Details</h2>
+            <p><strong>Source of Lead:</strong> {{ lead.source_of_lead }}</p>
+            <p><strong>Counsellor:</strong> {{ lead.counsellor }}</p>
+            <p><strong>Mode:</strong> {{ lead.mode }}</p>
+            <p><strong>Status:</strong> {{ lead.status }}</p>
+            <p><strong>Joining Centre:</strong> {{ lead.joining_centre }}</p>
+            <p><strong>Course:</strong> {{ lead.course }}</p>
+            <p><strong>Education Background:</strong> {{ lead.education_background }}</p>
+        </div>
+        <div class="profile-section">
+            <h2>Additional Information</h2>
+            <p><strong>Main:</strong> {{ lead.main }}</p>
+            <p><strong>CS Background:</strong> {{ lead.cs_background }}</p>
+            <p><strong>Employed:</strong> {{ lead.employed }}</p>
+            <p><strong>Joining Month:</strong> {{ lead.joining_month }}</p>
+            <p><strong>Additional Notes:</strong> {{ lead.additional_notes }}</p>
+            <p><strong>Initial Response:</strong> {{ lead.initial_response }}</p>
+        </div>
+        <div class="profile-section">
+            <h2>Follow Ups</h2>
+            <p><strong>First Follow Up:</strong> {{ lead.first_follow_up }}</p>
+            <p><strong>First Follow Up Date:</strong> {{ lead.first_follow_up_date }}</p>
+            <p><strong>Second Follow Up:</strong> {{ lead.second_follow_up }}</p>
+            <p><strong>Second Follow Up Date:</strong> {{ lead.second_follow_up_date }}</p>
+            <p><strong>Third Follow Up:</strong> {{ lead.third_follow_up }}</p>
+            <p><strong>Third Follow Up Date:</strong> {{ lead.third_follow_up_date }}</p>
+        </div>
+        <div class="profile-section">
+            <h2>Last Modified</h2>
+            <p>{{ lead.last_modified }}</p>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+      /* Basic reset for margin and padding */
+/* Basic reset for margin and padding */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+
+}
+
+/* Container for the logo */
+.logo-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Container for the links */
+.links-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* General styles for both links */
+.links-container a {
+    display: inline-block;
+    margin: 20px;
+    padding: 15px 30px;
+    text-decoration: none;
+    color: #333; /* Dark color for text */
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+/* Specific styles for each link */
+.links-container a.admin-login {
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+}
+
+.links-container a.counsellor-login {
+    background-color: #28a745; /* Green background */
+    color: white; /* White text */
+}
+
+/* Hover effects for the links */
+.links-container a:hover {
+    transform: translateY(-5px);
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .links-container a {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+
+        /* Container for the logo */
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        /* Container for the links */
+        .links-container {
+            margin-top: 30px;
+        }
+
+        /* General styles for both links */
+        .links-container a {
+            display: inline-block;
+            margin: 20px;
+            padding: 15px 30px;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Specific styles for each link */
+        .links-container a.admin-login {
+            background-color: #007bff; /* Blue background */
+        }
+
+        .links-container a.counsellor-login {
+            background-color: #28a745; /* Green background */
+        }
+
+        /* Hover effects for the links */
+        .links-container a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focus effects for accessibility */
+        .links-container a:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px #ffa, 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+</style>
+
+<div class="logo-container">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVkwfkxHEDwpNP05-yNjvgwyq2xEklRXtGTQ&s" alt="Logo" width="300"> <!-- Adjust the width as needed -->
+</div>
+
+<div class="links-container">
+      <a href="{% url 'admin_login' %}" class="admin-login">LOGIN AS ADMIN</a>
+      <a href="{% url 'user_login' %}" class="counsellor-login">LOGIN AS COUNSELLOR</a>
+</div>
+{% endblock %}
