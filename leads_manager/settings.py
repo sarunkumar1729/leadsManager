@@ -28,6 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# DEBUG = False
+
+# ALLOWED_HOSTS = ['sarunkumartecholas.pythonanywhere.com']
+
 # settings.py
 
 
@@ -86,6 +90,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'sarunkumartechol$default',  # Replace with your database name
+#         'USER': 'sarunkumartechol',  # Replace with your PythonAnywhere username
+#         'PASSWORD': '17291279sar@KMR',  # Replace with your MySQL database password
+#         'HOST': 'sarunkumartecholas.mysql.pythonanywhere-services.com',  # PythonAnywhere MySQL host
+#         'PORT': '3306',  # Default MySQL port
+#     }
+# }
 
 
 # Password validation
