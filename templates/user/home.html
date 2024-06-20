@@ -1,4 +1,33 @@
 {% extends 'user/base.html' %} {% block content %}
+
+
+
+<style>
+  
+#myBtn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+#myBtn:hover {
+  background-color: #555;
+}
+</style>
+<button onclick="topFunction()" id="myBtn" title="Go to top">Move to Top</button>
+
+
+
 <div class="row">
 <div class="col-md-6 p-3">
 <table class="table table-bordered table-striped">
@@ -53,13 +82,27 @@
         white-space: nowrap; /* Prevent table header from wrapping */
       }
     </style>
-    <a href="{% url 'add_lead' %}" class="btn btn-primary">ADD LEAD</a>
+    <a href="{% url 'add_lead' %}" class="btn btn-primary mb-2">ADD NEW LEAD</a>
+    <!-- search lead with phone  -->
+    <div class="w-25 p-3 border mb-2">
+      <p>Search existing lead with phone number</p>
+    <form action="{% url 'search_with_phone' %}" method="post">
+      {% csrf_token  %}
+      <div class="form-group">
+        <input type="text" class="form-control" name="phone">
+      </div>
+      <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-primary mt-2">
+      </div>
+    </form>
+    </div>
+    <!-- end search lead  -->
     <!-- table  -->
     <div class="table-responsive">
       <table class="table table-striped table-bordered">
         <thead>
           <tr>
-            <th></th>
+            <th colspan="3">ACTION</th>
             <th>NAME</th>
             <th>PHONE</th>
             <th>DATE</th>
@@ -82,7 +125,6 @@
             <th>DATE</th>
             <th>THIRD FOLLOW UP</th>
             <th>DATE</th>
-            <th colspan="2">ACTION</th>
             <th>LAST EDITED</th>
           </tr>
         </thead>
@@ -90,6 +132,14 @@
           {% for lead in leads %}
           <tr>
             <td><a href="{% url 'lead_profile' lead.id %}" class="btn btn-primary">VIEW</a></td>
+            <td>
+              <a href="{% url 'edit_lead' lead.id %}" class="btn btn-success"
+                >EDIT</a
+              >
+            </td>
+            <td>
+              <button type="button" class="delete-btn btn btn-danger" data-id="{{ lead.id }}">Delete</button>
+            </td>
             <td>{{lead.name}}</td>
             <td>{{lead.phone_number}}</td>
             <td>{{lead.date}}</td>
@@ -112,86 +162,105 @@
             <td>{{lead.second_follow_up_date}}</td>
             <td>{{lead.third_follow_up}}</td>
             <td>{{lead.third_follow_up_date}}</td>
-            <td>
-              <a href="{% url 'edit_lead' lead.id %}" class="btn btn-primary"
-                >EDIT</a
-              >
-            </td>
-            <td>
-                <a href="#" onclick="confirmDelete({{ lead.id }});" class="btn btn-danger">Delete</a>
-            </td>
             <td>{{lead.last_modified}}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    
-    <script>
-     function confirmDelete(leadId) {
+
+
+
+<!-- warning if lead is not yours  -->
+{% if err1 %}
+  <script>
         Swal.fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch(`/delete-lead/${leadId}/`, {  // Replace `/delete-lead-url/${leadId}/` with your actual delete URL pattern
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token for security
-              },
-              body: JSON.stringify({})
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === 'success') {
-                Swal.fire({
-                  title: "Deleted!",
-                  text: "Your file has been deleted.",
-                  icon: "success"
-                }).then(() => {
-                  window.location.href = '/leads/';  // Redirect to leads page
-                });
-              } else {
-                Swal.fire({
-                  title: "Error!",
-                  text: data.message,
-                  icon: "error"
-                });
-              }
-            })
-            .catch(error => {
-              Swal.fire({
-                title: "Error!",
-                text: "An error occurred while deleting the item.",
-                icon: "error"
-              });
-              console.error('Error:', error);
-            });
-          }
-        });
-      }
+      icon: "error",
+      title: "Oops...",
+      text: "This lead is not yours... !",
+      footer: '<a href="#">Why do I have this issue?</a>'
+    });
+  </script>
+{% endif %}
+
+{% if err2 %}
+  <script>
+        Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "This lead does not exists... !",
+      footer: '<a href="#">Why do I have this issue?</a>'
+    });
+  </script>
+{% endif %}
+
+
     
-      // Function to get the CSRF token from the cookies
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      }
+    <script> // script for deleting lead
+    //  function confirmDelete(leadId) {
+    //     Swal.fire({
+    //       title: "Are you sure?",
+    //       text: "You won't be able to revert this!",
+    //       icon: "warning",
+    //       showCancelButton: true,
+    //       confirmButtonColor: "#3085d6",
+    //       cancelButtonColor: "#d33",
+    //       confirmButtonText: "Yes, delete it!"
+    //     }).then((result) => {
+    //       if (result.isConfirmed) {
+    //         fetch(`/delete-lead/${leadId}/`, {  // Replace `/delete-lead-url/${leadId}/` with your actual delete URL pattern
+    //           method: 'POST',
+    //           headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token for security
+    //           },
+    //           body: JSON.stringify({})
+    //         })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //           if (data.status === 'success') {
+    //             Swal.fire({
+    //               title: "Deleted!",
+    //               text: "Your file has been deleted.",
+    //               icon: "success"
+    //             }).then(() => {
+    //               window.location.href = '/leads/';  // Redirect to leads page
+    //             });
+    //           } else {
+    //             Swal.fire({
+    //               title: "Error!",
+    //               text: data.message,
+    //               icon: "error"
+    //             });
+    //           }
+    //         })
+    //         .catch(error => {
+    //           Swal.fire({
+    //             title: "Error!",
+    //             text: "An error occurred while deleting the item.",
+    //             icon: "error"
+    //           });
+    //           console.error('Error:', error);
+    //         });
+    //       }
+    //     });
+    //   }
+    
+    //   // Function to get the CSRF token from the cookies
+    //   function getCookie(name) {
+    //     let cookieValue = null;
+    //     if (document.cookie && document.cookie !== '') {
+    //       const cookies = document.cookie.split(';');
+    //       for (let i = 0; i < cookies.length; i++) {
+    //         const cookie = cookies[i].trim();
+    //         if (cookie.substring(0, name.length + 1) === (name + '=')) {
+    //           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+    //           break;
+    //         }
+    //       }
+    //     }
+    //     return cookieValue;
+    //   }
     </script>
 
 
@@ -229,4 +298,79 @@
         },
       });
 </script>
+
+
+
+
+<!-- delete lead script  -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.delete-btn').forEach(button => {
+          button.addEventListener('click', (event) => {
+              const leadId = event.target.dataset.id;
+              Swal.fire({
+                  title: "Are you sure?",
+                  text: "You won't be able to revert this!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, delete it!"
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      fetch(`/delete_lead/${leadId}/`, {
+                          method: 'POST',
+                          headers: {
+                              'X-CSRFToken': '{{ csrf_token }}',
+                          },
+                      })
+                      .then(response => {
+                          if (response.ok) {
+                              Swal.fire({
+                                  title: "Deleted!",
+                                  text: "Your lead has been deleted.",
+                                  icon: "success"
+                              }).then(() => {
+                                  window.location.reload();
+                              });
+                          } else {
+                              Swal.fire({
+                                  title: "Error!",
+                                  text: "There was an error deleting the lead.",
+                                  icon: "error"
+                              });
+                          }
+                      });
+                  }
+              });
+          });
+      });
+  });
+</script>
+<!-- delete lead script end here  -->
+
+<!-- move to top button script  -->
+<script>
+  // Get the button
+  let mybutton = document.getElementById("myBtn");
+  
+  // When the user scrolls down 20px from the top of the document, show the button
+  window.onscroll = function() {scrollFunction()};
+  
+  function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      mybutton.style.display = "block";
+    } else {
+      mybutton.style.display = "none";
+    }
+  }
+  
+  // When the user clicks on the button, scroll to the top of the document
+  function topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+</script>
+<!-- move to top button end here  -->
+
 {% endblock %}

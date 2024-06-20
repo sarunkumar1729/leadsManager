@@ -80,16 +80,16 @@
             </select>
 
             <label for="cs_background">Coumputer science background</label>
-            <label for="yes">yes</label>
-            <input type="radio" id="yes" name="cs_background" value="yes">
-            <label for="no">no</label>
-            <input type="radio" id="no" name="cs_background" value="no">
+            <label for="cs_yes">yes</label>
+            <input type="radio" id="cs_yes" name="cs_background" value="yes">
+            <label for="cs_no">no</label>
+            <input type="radio" id="cs_no" name="cs_background" value="no">
 
             <label for="employed">employed</label>
-            <label for="yes">yes</label>
-            <input type="radio" name="employed" value="yes" id="yes">
-            <label for="no">no</label>
-            <input type="radio" name="employed" value="no" id="no">
+            <label for="emp_yes">yes</label>
+            <input type="radio" name="employed" value="yes" id="emp_yes">
+            <label for="emp_no">no</label>
+            <input type="radio" name="employed" value="no" id="emp_no">
 
             <label for="joining_month">joining month</label>
             <input type="month" name="joining_month">
@@ -120,4 +120,21 @@
 
             <input type="submit" value="save">
       </form>
+
+      <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                  const dateInput = document.getElementById('date');
+                  if (dateInput) {
+                        const today = new Date();
+                        const year = today.getFullYear();
+                        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+                        const day = String(today.getDate()).padStart(2, '0');
+
+                        const currentDate = `${year}-${month}-${day}`;
+                        console.log(currentDate)
+                        dateInput.value = currentDate;
+                  }
+            });
+      </script>
+
 {% endblock %}

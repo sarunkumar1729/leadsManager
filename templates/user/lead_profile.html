@@ -68,8 +68,8 @@ body {
         <div class="profile-section">
             <h2>Additional Information</h2>
             <p><strong>Main:</strong> {{ lead.main }}</p>
-            <p><strong>CS Background:</strong> {{ lead.cs_background }}</p>
-            <p><strong>Employed:</strong> {{ lead.employed }}</p>
+            <p><strong>CS Background:</strong>{% if lead.cs_background %} Yes {% else %}No {% endif %}</p>
+            <p><strong>Employed:</strong>{% if lead.employed %} Yes {% else %} No {% endif %}</p>
             <p><strong>Joining Month:</strong> {{ lead.joining_month }}</p>
             <p><strong>Additional Notes:</strong> {{ lead.additional_notes }}</p>
             <p><strong>Initial Response:</strong> {{ lead.initial_response }}</p>
@@ -77,16 +77,54 @@ body {
         <div class="profile-section">
             <h2>Follow Ups</h2>
             <p><strong>First Follow Up:</strong> {{ lead.first_follow_up }}</p>
-            <p><strong>First Follow Up Date:</strong> {{ lead.first_follow_up_date }}</p>
-            <p><strong>Second Follow Up:</strong> {{ lead.second_follow_up }}</p>
-            <p><strong>Second Follow Up Date:</strong> {{ lead.second_follow_up_date }}</p>
-            <p><strong>Third Follow Up:</strong> {{ lead.third_follow_up }}</p>
-            <p><strong>Third Follow Up Date:</strong> {{ lead.third_follow_up_date }}</p>
+            {% if lead.first_follow_up_date is None %}
+                <p><strong>First follow up date:</strong></p>
+            {% else %}
+                <p><strong>First Follow Up Date:</strong> {{ lead.first_follow_up_date }}</p>
+            {% endif %}
+                <p><strong>Second Follow Up:</strong> {{ lead.second_follow_up }}</p>
+            {% if lead.second_follow_up_date is None %}
+                <p><strong>Second Follow Up Date:</strong></p>
+            {% else %}
+                <p><strong>Second Follow Up Date:</strong> {{ lead.second_follow_up_date }}</p>
+            {% endif %}
+                <p><strong>Third Follow Up:</strong> {{ lead.third_follow_up }}</p>
+            {% if lead.third_follow_up_date is None %}
+                <p><strong>Third Follow Up Date:</strong></p>
+            {% else %}
+                <p><strong>Third Follow Up Date:</strong> {{ lead.third_follow_up_date }}</p>
+            {% endif %}
         </div>
         <div class="profile-section">
             <h2>Last Modified</h2>
             <p>{{ lead.last_modified }}</p>
         </div>
+        <a class="btn btn-success" href="{% url 'edit_from_profile' %}">EDIT</a>
     </div>
+
+
+    {% if msg_success %}
+    <script>
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your have successfully saved the lead.",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
+    {% endif %}
+
+    {% if modified %}
+    <script>
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your have successfully edited the lead.",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
+    {% endif %}
 
 {% endblock %}

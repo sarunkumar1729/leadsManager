@@ -7,6 +7,11 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
+
+<!-- cdn for alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <style>
   /* BASIC */
 
@@ -302,6 +307,9 @@
 
     <!-- Login Form -->
     <form method="POST" action="{% url 'user_login' %}">
+      {% if password_change %}
+        <p style="color:red;">You have changed your password, login with new password.</p>
+      {% endif %}
       {% csrf_token %}
       <input
         type="text"
@@ -326,4 +334,27 @@
     </div>
   </div>
 </div>
+
+{% if error %}
+  <script>
+        Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Invalid credentials!",
+      footer: '<a href="#">Why do I have this issue?</a>'
+    });
+  </script>
+{% endif %}
+
+{% if suspended %}
+  <script>
+        Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Your account is suspended by admin !",
+      footer: '<a href="#">Why do I have this issue?</a>'
+    });
+  </script>
+{% endif %}
+
 {% endblock %}

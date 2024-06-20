@@ -4,11 +4,11 @@
 <style>
 
 </style>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="container-fluid vh-100">
   <div class="row h-100">
     <div class="col-md-6 d-flex align-items-center justify-content-center">
-      <form class="w-75" method="POST" action="{% url 'create_user' %}" onsubmit="return validateForm()">
+      <form class="w-75" method="POST" id="user_form" action="{% url 'create_user' %}">
         {% csrf_token %}
         <div class="form-group">
           <label for="name">NAME</label>
@@ -42,6 +42,7 @@
             <label for="confirmPassword">CONFIRM PASSWORD</label>
             <input class="form-control mb-3" type="password" id="confirmPassword" name="confirm_password" required />
           </div>
+          <p style="color:red;" id="message"></p>
           <div class="form-group">
             <label for="user_type">USER TYPE</label>
           </div>
@@ -82,23 +83,40 @@
                 document.getElementById('username-result').textContent = '';
             }
         });
-
-        function validateForm() {
-            var password = document.getElementById("password").value;
-            var confirmPassword = document.getElementById("confirmPassword").value;
-
-            if (password !== confirmPassword) {
-              Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Password and confirm password are not matching !",
-                footer: '<a href="#">Why do I have this issue?</a>'
-              });                
-              return false;
-            }
-            return true;
-        }
-
-
 </script>
+
+
+<script>
+    document.getElementById('user_form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get the values of the password and confirm password fields
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const messageElement = document.getElementById('message');
+
+    // Check if the passwords match
+    if (password !== confirmPassword) {
+          messageElement.style.color = 'red';
+          messageElement.textContent = 'Passwords do not match!';
+          // Optionally, you can allow form submission here
+          // event.target.submit();
+    }else{
+          event.target.submit();
+    }
+    });
+</script>
+
+{% if user_created %}
+  <script>
+        Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "New user created successfully....",
+        showConfirmButton: false,
+        timer: 1500
+      });
+  </script>
+{% endif %}
+
 {% endblock %}

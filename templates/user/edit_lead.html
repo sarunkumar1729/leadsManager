@@ -1,8 +1,24 @@
 {% extends 'user/base.html' %}
 
 {% block content %}
+
+<style>
+    .message {
+          font-weight: bold;
+      }
+      .available {
+          color: green;
+      }
+      .taken {
+          color: red;
+      }
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
       <div>
-      <form method="POST" action="{% url 'save_edited' %}">
+      <form method="POST" action="{% url 'save_edited' %}" id="leadForm">
             {% csrf_token %}
 
             <div class="row">
@@ -14,18 +30,19 @@
 
             <div class="form-group m-3">
             <label for="phone">Phone</label>
-            <input class='form-control' type="text" id="phone" name="phone" value="{{lead.phone_number}}">
+            <input class='form-control' type="text" id="phone_number" name="phone" maxlength="10" size="10" value="{{lead.phone_number}}">
+            <span id="phone-message"></span>
             </div>
 
             <div class="form-group m-3">
             <label for="date">Date</label>
             <p>{{lead.date}}</p>
-            <input class='form-control' type="date" id="date" name="date">
+            <!-- <input class='form-control' type="date" id="date" name="date"> -->
             </div>
 
             <div class="form-group m-3">
             <label for="source">Source of lead</label>
-            <select class='form-control' name="source" id="source">
+            <select class='form-control' name="source" id="source" required>
                         <option value="other counsellor" {% if lead.source_of_lead == 'other counsellor' %}selected{% endif %}>other counsellor</option>
                         <option value="direct call" {% if lead.source_of_lead == 'direct call' %}selected{% endif %}>direct call</option>
                         <option value="whatsapp" {% if lead.source_of_lead == 'whatsapp' %}selected{% endif %}>whatsapp</option>
@@ -40,12 +57,13 @@
             <select class='form-control' name="mode" id="mode">
                         <option value="online" {% if lead.mode == 'online' %}selected{% endif %}>online</option>
                         <option value="offline" {% if lead.mode == 'offline' %}selected{% endif %}>offline</option>
+                        <option value="not decided" {% if lead.mode == 'not decided' %}selected{% endif %}>not decided</option>
             </select>
             </div>
             
             <div class="form-group m-3">
             <label for="status">Status</label>
-            <select class='form-control' name="status" id="status">
+            <select class='form-control' name="status" id="status" required>
                         <option value="not intrested" {% if lead.status == 'not intrested' %}selected{% endif %}>not intrested</option>
                         <option value="batch confirmed" {% if lead.status == 'batch confirmed' %}selected{% endif %}>batch confirmed</option>
                         <option value="cold" {% if lead.status == 'cold' %}selected{% endif %}>cold</option>
@@ -53,7 +71,7 @@
                         <option value="registration fee paid" {% if lead.status == 'registration fee paid' %}selected{% endif %}>registration fee paid</option>
                         <option value="demo requested" {% if lead.status == 'demo requested' %}selected{% endif %}>demo requested</option>
                         <option value="demo provided" {% if lead.status == 'demo provided' %}selected{% endif %}>demo provided</option>
-                        <option value="next year" {% if lead.status == 'next year' %}>selected{% endif %}</option>
+                        <option value="next year" {% if lead.status == 'next year' %}selected{% endif %}>selected</option>
 
             </select>
             </div>
@@ -64,6 +82,7 @@
                         <option value="kochi" {% if lead.joining_centre == 'kochi' %}selected{% endif %}>kochi</option>
                         <option value="calicut" {% if lead.joining_centre == 'calicut' %}selected{% endif %}>calicut</option>
                         <option value="palakkad" {% if lead.joining_centre == 'palakkad' %}selected{% endif %}>palakkad</option>
+                        <option value="not decided" {% if lead.joining_centre == 'not decided' %}selected{% endif %}>not decided</option>
             </select>
             </div>
 
@@ -76,13 +95,14 @@
                   <option value="python fullstack" {% if lead.course == 'python fullstack' %}selected{% endif %}>python fullstack</option>
                   <option value="software testing" {% if lead.course == 'software testing' %}selected{% endif %}>software testing</option>
                   <option value="MERN stack" {% if lead.course == 'MERN stack' %}selected{% endif %}>MERN stack</option>
+                  <option value="not decided" {% if lead.course == 'not decided' %}selected{% endif %}>not decided</option>
             </select>
             </div>
               
 
             <div class="form-group m-3">
             <label for="education">Eduction</label>
-            <select class='form-control' name="education" id="education">
+            <select class='form-control' name="education" id="education" required>
                   <option value="SSLC" {% if lead.education == 'SSLC' %}selected{% endif %}>SSLC</option>
                   <option value="Plus Two" {% if lead.education == 'Plus Two' %}selected{% endif %}>Plus Two</option>
                   <option value="Graduate" {% if lead.education == 'Graduate' %}selected{% endif %}>Graduate</option>
@@ -93,7 +113,7 @@
               
             <div class="form-group m-3">
             <label for="stream">Stream</label>
-            <select class='form-control' name="stream" id="stream">
+            <select class='form-control' name="stream" id="stream" required>
                   <option value="Technical" {% if lead.main == 'Technical' %}selected{% endif %}>Technical</option>
                   <option value="Arts" {% if lead.main == 'Arts' %}selected{% endif %}>Arts</option>
                   <option value="Science" {% if lead.main == 'Science' %}selected{% endif %}>Science</option>
@@ -173,4 +193,144 @@
             </div>
       </form>
       </div>
+
+      <script type="text/javascript">
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $(document).ready(function(){
+            $('#phone_number').on('input', function(){
+                var phone_number = $(this).val();
+                if(phone_number.length == 10) {
+                    $.ajax({
+                        url: '{% url "check_phone_number4" %}',
+                        data: {
+                            'phone_number': phone_number
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.is_taken) {
+                                $('#phone-message').text('This phone number is already registered.')
+                                                  .removeClass('available')
+                                                  .addClass('taken');
+                            } else {
+                                $('#phone-message').text('This phone number is available.')
+                                                  .removeClass('taken')
+                                                  .addClass('available');
+                            }
+                        }
+                    });
+                } else {
+                    $('#phone-message').text('').removeClass('available taken');
+                }
+            });
+        });
+    </script>
+
+<!-- 
+<script>
+$(document).ready(function() {
+    $('#leadForm').submit(function(event) {
+        event.preventDefault();
+        var phoneNumber = $('#phone_number').val();
+
+        $.ajax({
+            url: '{% url "check_phone_number2" %}',  // URL pattern for checking phone number
+            data: {
+                'phone_number': phoneNumber
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.exists) {
+                        // alertify.error('This lead already exists');
+                        alert('this lead exists');
+                    $('#leadForm')[0].submit();  // Submit the form if phone number does not exist
+                }
+            }
+        });
+    });
+});
+</script> -->
+
+<script>
+$(document).ready(function() {
+$('#leadForm').submit(function(event) {
+    event.preventDefault();
+    var phoneNumber = $('#phone_number').val();
+
+    $.ajax({
+        url: '{% url "check_phone_number3" %}',  // URL pattern for checking phone number
+        data: {
+            'phone_number': phoneNumber
+        },
+        dataType: 'json',
+        success: function (data) {
+            if (data.exists) {
+                // Prevent form submission if phone number exists
+                return false;
+            } else {
+                // Submit the form if phone number does not exist
+                $('#leadForm')[0].submit();
+            }
+        }
+    });
+});
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+        const day = String(today.getDate()).padStart(2, '0');
+
+        const currentDate = `${year}-${month}-${day}`;
+        dateInput.value = currentDate;
+    }
+});
+
+
+const monthInput = document.getElementById('joining_month');
+        if (monthInput) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+
+            const currentMonth = `${year}-${month}`;
+            monthInput.value = currentMonth;
+        }
+</script>
+
+
+
+
+
+
 {% endblock %}

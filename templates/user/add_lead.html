@@ -1,8 +1,48 @@
 {% extends 'user/base.html' %}
 
 {% block content %}
-      <div>
-      <form method="POST" action="{% url 'add_lead' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<!-- alertify -->
+<!-- JavaScript -->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
+
+<!-- CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css"/>
+<!-- Default theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css"/>
+<!-- Semantic UI theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css"/>
+<!-- Bootstrap theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css"/>
+
+<!-- 
+    RTL version
+-->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.rtl.min.css"/>
+<!-- Default theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.rtl.min.css"/>
+<!-- Semantic UI theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.rtl.min.css"/>
+<!-- Bootstrap theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.rtl.min.css"/>
+<!-- alertify end -->
+
+<style>
+      .message {
+            font-weight: bold;
+        }
+        .available {
+            color: green;
+        }
+        .taken {
+            color: red;
+        }
+</style>
+
+      <div>          
+      <form method="POST" id="leadForm" action="{% url 'add_lead' %}">
             {% csrf_token %}
 
             <div class="row">
@@ -14,12 +54,13 @@
 
             <div class="form-group m-3">
             <label for="phone">Phone</label>
-            <input class='form-control' type="text" id="phone" name="phone" required>
+            <input class='form-control' type="text" id="phone_number" name="phone" maxlength="10" size="10" oninput="check_phone_length()" required>
+            <span id="phone-message"></span>
             </div>
 
             <div class="form-group m-3">
             <label for="date">Date</label>
-            <input class='form-control' type="date" id="date" name="date" required>
+            <input class='form-control' type="date" id="date" name="date" required readonly>
             </div>
 
             <div class="form-group m-3">
@@ -35,8 +76,9 @@
             </div>
 
             <div class="form-group m-3">
-            <label for="mode">Mode</label>
+            <label for="mode">Mode of class</label>
             <select class='form-control' name="mode" id="mode" required>
+                        <option value="not decided" selected>not decided</option>
                         <option value="online">online</option>
                         <option value="offline">offline</option>
             </select>
@@ -59,6 +101,7 @@
             <div class="form-group m-3">
             <label for="joining center">Joining center</label>
             <select class='form-control' name="joining_center" id="joining_center" required>
+                        <option value="not decided">not decided</option>
                         <option value="kochi">kochi</option>
                         <option value="calicut">calicut</option>
                         <option value="palakkad">palakkad</option>
@@ -68,6 +111,7 @@
             <div class="form-group m-3">
             <label for="course">Course</label>
             <select class='form-control' name="course" id="course" required>
+                  <option value="not decided">not decided</option>
                   <option value="data science">data science</option>
                   <option value="data analytics">data analytics</option>
                   <option value="business analytics">business analytics</option>
@@ -103,7 +147,7 @@
             <label for="yes"><b>YES</b></label>
             <input  type="radio" id="yes" name="cs_background" value="yes" required>
             <label for="no"><b>NO</b></label>
-            <input  type="radio" id="no" name="cs_background" value="no" required>
+            <input  type="radio" id="no" name="cs_background" value="no" required checked>
             </div>
 
             <div class="form-group m-3">
@@ -111,12 +155,12 @@
             <label for="yes"><b>YES</b></label>
             <input  type="radio" name="employed" value="yes" id="yes" required>
             <label for="no"><b>NO</b></label>
-            <input  type="radio" name="employed" value="no" id="no" required>
+            <input  type="radio" name="employed" value="no" id="no" required checked>
             </div>
 
             <div class="form-group m-3">
             <label for="joining_month">Joining month</label>
-            <input class='form-control' type="month" name="joining_month" required>
+            <input class='form-control' type="month" name="joining_month" id="joining_month">
             </div>
 
             </div>
@@ -124,46 +168,46 @@
             <div class="col-md-6 p-5">
             <div class="form-group m-3">
             <label for="additional_notes">Additional notes</label>
-            <textarea class="form-control" name="additional_notes" id="additional_notes" cols="30" rows="10" required></textarea>
+            <textarea class="form-control" name="additional_notes" id="additional_notes" cols="30" rows="10"></textarea>
             </div>
             
             <div class="form-group m-3">
             <label for="initial_response">Initial response</label>
-            <input class='form-control' type="text" id="initial_response" name="initial_response" required>
+            <input class='form-control' type="text" id="initial_response" name="initial_response">
             </div>
 
             <div class="form-group m-3">
             <label for="first_follow_up">First follow up</label> 
-            <input class='form-control' type="text" name="first_follow_up" id="first_follow_up" required>
+            <input class='form-control' type="text" name="first_follow_up" id="first_follow_up">
             </div>
 
             <div class="form-group m-3">
             <label for="first_follow_up_date">First follow up date</label>
             <p>{{lead.first_follow_up_date}}</p>
-            <input class='form-control' type="date" name="first_follow_up_date" id="first_follow_up_date" required>
+            <input class='form-control' type="date" name="first_follow_up_date" id="first_follow_up_date">
             </div>
 
             <div class="form-group m-3">
             <label for="second_follow_up">Second follow up</label>
-            <input class='form-control' type="text" name="second_follow_up" id="second_follow_up" required>
+            <input class='form-control' type="text" name="second_follow_up" id="second_follow_up">
             </div>
 
             <div class="form-group m-3">
             <label for="second_follow_up_date">Second follow up date</label>
             <p>{{lead.second_follow_up_date}}</p>
-            <input class='form-control' type="date" id="second_follow_up_date" name="second_follow_up_date" required>
+            <input class='form-control' type="date" id="second_follow_up_date" name="second_follow_up_date">
             </div>
             
             <div class="form-group m-3">
             <label for="third_follow_up">Third follow up</label>     
-            <input class='form-control' type="text" id="third_follow_up" name="third_follow_up" required>
+            <input class='form-control' type="text" id="third_follow_up" name="third_follow_up">
             </div>
 
 
             <div class="form-group m-3">
             <label for="third_follow_up_date">Third follow up date</label>
             <p>{{lead.third_follow_up_date}}</p>
-            <input class='form-control' type="date" id="third_follow_up_date" name="third_follow_up_date" required>
+            <input class='form-control' type="date" id="third_follow_up_date" name="third_follow_up_date">
             </div>
 
             <input class='btn btn-warning' type="submit" value="save">
@@ -172,4 +216,167 @@
             </div>
       </form>
       </div>
+
+      {% if msg_error %}
+      <script>
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "This lead is already registered!",
+            footer: '<a href="#">Why do I have this issue?</a>'
+        });
+        </script>
+      {% endif %}
+
+
+      <!-- <script>
+        function check_phone_length(){
+            let phone = document.getElementById('phone_number');
+            let msg = document.getElementById('phone_message');
+            if(phone.length != 10){
+                msg.innerHTML = "phone number must be 10 digits";
+                msg.style.color = "red";
+            }else{
+                msg.innerHTML = "Valid";
+                msg.style.color = "green";
+            }
+        }
+      </script> -->
+
+
+      <script type="text/javascript">
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+    
+            function csrfSafeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+    
+            $(document).ready(function(){
+                $('#phone_number').on('input', function(){
+                    var phone_number = $(this).val();
+                    if(phone_number.length == 10) {
+                        $.ajax({
+                            url: '{% url "check_phone_number" %}',
+                            data: {
+                                'phone_number': phone_number
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.is_taken) {
+                                    $('#phone-message').text('This phone number is already registered.')
+                                                      .removeClass('available')
+                                                      .addClass('taken');
+                                } else {
+                                    $('#phone-message').text('This phone number is available.')
+                                                      .removeClass('taken')
+                                                      .addClass('available');
+                                }
+                            }
+                        });
+                    } else {
+                        $('#phone-message').text('').removeClass('available taken');
+                    }
+                });
+            });
+        </script>
+
+<!-- 
+<script>
+    $(document).ready(function() {
+        $('#leadForm').submit(function(event) {
+            event.preventDefault();
+            var phoneNumber = $('#phone_number').val();
+
+            $.ajax({
+                url: '{% url "check_phone_number2" %}',  // URL pattern for checking phone number
+                data: {
+                    'phone_number': phoneNumber
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.exists) {
+                            // alertify.error('This lead already exists');
+                            alert('this lead exists');
+                        $('#leadForm')[0].submit();  // Submit the form if phone number does not exist
+                    }
+                }
+            });
+        });
+    });
+</script> -->
+
+<script>
+$(document).ready(function() {
+    $('#leadForm').submit(function(event) {
+        event.preventDefault();
+        var phoneNumber = $('#phone_number').val();
+
+        $.ajax({
+            url: '{% url "check_phone_number2" %}',  // URL pattern for checking phone number
+            data: {
+                'phone_number': phoneNumber
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.exists) {
+                    // Prevent form submission if phone number exists
+                    return false;
+                } else {
+                    // Submit the form if phone number does not exist
+                    $('#leadForm')[0].submit();
+                }
+            }
+        });
+    });
+});
+</script>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('date');
+        if (dateInput) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+            const day = String(today.getDate()).padStart(2, '0');
+
+            const currentDate = `${year}-${month}-${day}`;
+            dateInput.value = currentDate;
+        }
+    });
+
+
+    const monthInput = document.getElementById('joining_month');
+            if (monthInput) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+
+                const currentMonth = `${year}-${month}`;
+                monthInput.value = currentMonth;
+            }
+        
+</script>
+
 {% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'user/home.html' %}
+
+
+{% block content %}
+
+<style>
+body {
+    /* font-family: Arial, sans-serif; */
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 50px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.notifications-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
+    transition: background-color 0.3s ease;
+}
+
+.notification-item:hover {
+    background-color: #f0f0f0;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.notification-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.notification-time {
+    font-size: 0.9rem;
+    color: #888;
+    text-align: right;
+}
+
+.notification-description {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.notification-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mark-read-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background-color: #0056b3;
+}
+
+</style>
+
+
+
+<div class="container">
+      <h2 class="header">Notifications</h2>
+      <ul class="notifications-list">
+      {% for n in notifications %}
+          <li class="notification-item">
+              <div class="notification-header">
+                  <h5 class="notification-title">Notification</h5>
+                  <div class="notification-time">Date: {{n.date}}<br>Time: {{n.time}}</div>
+              </div>
+              <p class="notification-description">{{n.message}} Phone : <b>{{n.phone}} <a class="text-info" href="{% url 'view_notification_profile' n.id %}">View profile</a></b></p>
+              {% if n.read %}
+              <div class="notification-footer">
+                  <button class="btn btn-success">Read</button>
+              </div>            
+              {% else %}
+              <div class="notification-footer">
+                  <a class="btn btn-primary" href="{% url 'mark_read' n.id %}">Mark as Read</a>
+              </div>
+              {% endif %}
+          </li>
+      {% endfor %}
+      </ul>
+  </div>
+{% endblock %}

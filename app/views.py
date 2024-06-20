@@ -5,13 +5,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from functools import wraps
-from app.models import Counsellor,Lead,login_details
+from app.models import Counsellor,Lead,login_details,notifications
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
 from user_agents import parse
-
+from django.http import JsonResponse
+from django.urls import reverse
 
 
 def home(request):
@@ -44,7 +45,8 @@ def create_user(request):
                         user.is_staff=True
                         user.save()
                   print('user created') # use alert
-                  return render(request,'admin/create_user.html')
+                  context = {'user_created':True}
+                  return render(request,'admin/create_user.html',context)
             else:
                   print('username already exist') # use ajax here
                   return render(request,'admin/create_user.html')
@@ -178,7 +180,10 @@ def user_login(request):
                   new_login.save()
                   return redirect('user_home')
             else:
-                 return render(request,'user/login.html')
+                 context={
+                       'suspended':True
+                 }
+                 return render(request,'user/login.html',context)
         else:
             return render(request, 'user/login.html', {'error': 'Invalid credentials'})
     else:
@@ -302,37 +307,46 @@ def add_lead(request):
             else:
                   employed=False
             joining_month=request.POST['joining_month']
+            if not joining_month:
+                 joining_month=None
             additional_notes=request.POST['additional_notes']
             initial_response=request.POST['initial_response']
             first_follow_up=request.POST['first_follow_up']
             first_follow_up_date=request.POST['first_follow_up_date']
+            if not first_follow_up_date:
+                 first_follow_up_date=None
             second_follow_up=request.POST['second_follow_up']
             second_follow_up_date=request.POST['second_follow_up_date']
+            if not second_follow_up_date:
+                 second_follow_up_date=None
             third_follow_up=request.POST['third_follow_up']
             third_follow_up_date=request.POST['third_follow_up_date']
-            print(
-                  name,
-                  phone,date,source_of_lead,
-                  mode,
-                  source_of_lead,
-                  status,
-                  joining_center,
-                  course,
-                  education,
-                  stream,
-                  cs_background,
-                  employed,
-                  joining_month,
-                  additional_notes,
-                  initial_response,
-                  first_follow_up,
-                  first_follow_up_date,
-                  second_follow_up,
-                  second_follow_up_date,
-                  third_follow_up,
-                  third_follow_up_date,
-                  sep='~'
-            )
+            if not third_follow_up_date:
+                 third_follow_up_date=None
+            # print(
+            #       name,
+            #       phone,date,source_of_lead,
+            #       mode,
+            #       source_of_lead,
+            #       status,
+            #       joining_center,
+            #       course,
+            #       education,
+            #       stream,
+            #       cs_background,
+            #       employed,
+            #       joining_month,
+            #       additional_notes,
+            #       initial_response,
+            #       first_follow_up,
+            #       first_follow_up_date,
+            #       second_follow_up,
+            #       second_follow_up_date,
+            #       third_follow_up,
+            #       third_follow_up_date,
+            #       sep='~'
+            # )
+            global new_lead
             new_lead=Lead(
                   name=name,
                   phone_number=phone,
@@ -357,24 +371,43 @@ def add_lead(request):
                   third_follow_up=third_follow_up,
                   third_follow_up_date=third_follow_up_date
             )
-            new_lead.save()
-            print('lead added')
-            return render(request,'user/add_lead.html')
+            if not Lead.objects.filter(phone_number = phone):
+                  new_lead.save()
+                  print('lead added')
+                  return redirect('saved_lead_profile')
+            else:
+                 context = {'msg_error':'this phone number is already registered'}
+                 return render(request,'user/add_lead.html',context)
       else:
             counsellors = Counsellor.objects.all()
             context={'counsellors':counsellors}
             return render(request,'user/add_lead.html',context)
       
+def saved_lead_profile(request):
+            context={'msg_success':'successfully added','lead':new_lead}
+            return render(request,'user/lead_profile.html',context)
+
+      
 def edit_lead(request,i):
       global lead
       lead=Lead.objects.get(id=i)
+      lead.editing=True
+      lead.save()
       context={'lead':lead}
+      
+      # l=Lead.objects.all()
+      # for i in l:
+      #       # print(i.editing)
+      #       i.editing=False
+      #       i.save()
+      #       print(i.editing)
+
       return render(request,'user/edit_lead.html',context)
 
 def save_edited(request):
       name=request.POST['name']
       phone=request.POST['phone']
-      date=request.POST['date']
+      # date=request.POST['date']
       source_of_lead=request.POST['source']
       mode=request.POST['mode']
       status=request.POST['status']
@@ -401,35 +434,49 @@ def save_edited(request):
       second_follow_up_date=request.POST['second_follow_up_date']
       third_follow_up=request.POST['third_follow_up']
       third_follow_up_date=request.POST['third_follow_up_date']
-      lead.name=name
-      lead.phone_number=phone
-      if date:
-            lead.date=date
-      lead.source_of_lead=source_of_lead
-      lead.mode=mode
-      lead.status=status
-      lead.joining_centre=joining_center
-      lead.course=course
-      lead.education_background=education
-      lead.main=stream
-      lead.cs_background=cs_background
-      lead.employed=employed
-      lead.joining_month=joining_month
-      lead.additional_notes=additional_notes
-      lead.initial_response=initial_response
-      lead.first_follow_up=first_follow_up
-      if first_follow_up_date:
-            lead.first_follow_up_date=first_follow_up_date
-      lead.second_follow_up=second_follow_up
-      if second_follow_up_date:
-            lead.second_follow_up_date=second_follow_up_date
-      lead.third_follow_up=third_follow_up
-      if third_follow_up_date:
-            lead.third_follow_up_date=third_follow_up_date
-      lead.last_modified=timezone.now()
-      lead.save()
-      print('edited')
-      return redirect('leads')
+      
+      other_leads=Lead.objects.filter(phone_number=phone).exclude(id=lead.id)
+      if other_leads:
+           msg='this phone number is already registered'
+           context={'msg':msg,'lead':lead}
+           return render(request,'user/edit_lead.html',context)
+      else:
+            lead.name=name
+            lead.phone_number=phone
+            # if date:
+            #       lead.date=date
+            lead.source_of_lead=source_of_lead
+            lead.mode=mode
+            lead.status=status
+            lead.joining_centre=joining_center
+            lead.course=course
+            lead.education_background=education
+            lead.main=stream
+            lead.cs_background=cs_background
+            lead.employed=employed
+            lead.joining_month=joining_month
+            lead.additional_notes=additional_notes
+            lead.initial_response=initial_response
+            lead.first_follow_up=first_follow_up
+            if first_follow_up_date:
+                  lead.first_follow_up_date=first_follow_up_date
+            lead.second_follow_up=second_follow_up
+            if second_follow_up_date:
+                  lead.second_follow_up_date=second_follow_up_date
+            lead.third_follow_up=third_follow_up
+            if third_follow_up_date:
+                  lead.third_follow_up_date=third_follow_up_date
+            lead.last_modified=timezone.now()
+            lead.editing=False
+            lead.save()
+            print('edited')
+            # context={'lead':lead,'modified':True}
+            # return render(request,'user/lead_profile.html',context)
+            return redirect('edited_lead_profile')
+      
+def edited_lead_profile(request):
+      context={'lead':lead,'modified':True}
+      return render(request,'user/lead_profile.html',context)
       
 def user_report(request,i):
       user=User.objects.get(id=i)
@@ -469,7 +516,7 @@ def course_wise_report(request):
      python_fullstack =Lead.objects.filter(Q(status='batch confirmed') & Q(course='python fullstack')).count()
      software_testing=Lead.objects.filter(Q(status='batch confirmed') & Q(course='software testing')).count()
      MERN_stack=Lead.objects.filter(Q(status='batch confirmed') & Q(course='MERN stack')).count()
-     context1={'ds':data_science,'da':data_analytics,'ba':business_analytics,'pf':python_fullstack,'st':software_testing,'ms':MERN_stack}
+     context={'ds':data_science,'da':data_analytics,'ba':business_analytics,'pf':python_fullstack,'st':software_testing,'ms':MERN_stack}
      return render(request,'admin/course_wise_report.html',context)
 
 # def delete_lead(request,i):
@@ -477,13 +524,10 @@ def course_wise_report(request):
 #       lead.delete()
 #       return redirect('leads')
 
-@csrf_exempt
-def delete_lead(request, i):
-    if request.method == 'POST':
-        lead = get_object_or_404(Lead, id=i)
-        lead.delete()
-        return JsonResponse({'status': 'success', 'message': 'Lead deleted successfully'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+def delete_lead(request, lead_id):
+    lead = get_object_or_404(Lead, pk=lead_id)
+    lead.delete()
+    return redirect(reverse('user_home'))
 
 def change_password(request):
       if request.method == 'POST':
@@ -497,7 +541,16 @@ def change_password(request):
                         user.set_password(new_password1)
                         user.save()
                         login(request, user)
-                        return redirect('user_logout')
+                        logout(request)
+                        if not user.is_staff:
+                              context={'password_change':True}
+                              return render(request,'user/login.html',context)
+                        else:
+                              context={'password_change':True}
+                              return render(request,'admin/login.html',context)
+            else:
+                  context={'old_password_not_matching':True}
+                  return render(request,'change_password.html',context)
       else:
             return render(request, 'change_password.html')
       
@@ -536,7 +589,92 @@ def users_page(request):
       context={'users':users,'superusers':superusers,'login_details':logins}
       return render(request,'admin/users.html',context)
 
-def lead_profile(request,i):
+def lead_profile(request,i=None):
       lead=Lead.objects.get(id=i)
       context={'lead':lead}
       return render(request,'user/lead_profile.html',context)
+
+def check_phone_number(request):
+    phone_number = request.GET.get('phone_number', None)
+    data = {
+        'is_taken': Lead.objects.filter(phone_number=phone_number).exists()
+    }
+    return JsonResponse(data)
+
+def check_phone_number2(request):
+    phone_number = request.GET.get('phone_number')
+    exists = Lead.objects.filter(phone_number=phone_number).exists()
+    return JsonResponse({'exists': exists})
+
+def check_phone_number3(request):
+    phone_number = request.GET.get('phone_number')
+    exists = Lead.objects.filter(phone_number=phone_number).exclude(id=lead.id).exists()
+    return JsonResponse({'exists': exists})
+
+def check_phone_number4(request):
+    phone_number = request.GET.get('phone_number', None)
+    data = {
+        'is_taken': Lead.objects.filter(phone_number=phone_number).exclude(id=lead.id).exists()
+    }
+    return JsonResponse(data)
+
+def search_with_phone(request):
+      leads=Lead.objects.filter(counsellor=request.user)
+      warm_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='warm')).count()
+      cold_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='cold')).count()
+      confirmed_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='batch confirmed')).count()
+      not_intrested_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='not intrested')).count()
+      registration_fee_paid_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='registration fee paid')).count()
+      demo_requested_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='demo requested')).count()
+      demo_provided_count=Lead.objects.filter(Q(counsellor=request.user) & Q(status='demo provided')).count()
+      next_year=Lead.objects.filter(Q(counsellor=request.user) & Q(status='next year')).count()
+      context={
+            'leads':leads,'warm':warm_count,'cold':cold_count,'confirmed':confirmed_count,'not_intrested':not_intrested_count,'registration_fee_paid':registration_fee_paid_count,'demo_requested':demo_requested_count,'demo_provided':demo_provided_count,'next_year':next_year
+            }
+      if request.method=='POST':
+            phone = request.POST['phone']
+            try:
+                  lead = Lead.objects.get(phone_number=phone)
+            except:
+                  lead = False
+            if lead:
+                  if lead.counsellor == request.user:
+                        context.update({'lead':lead})
+                        return render(request,'user/lead_profile.html',context)
+                  elif lead.counsellor != request.user:
+                        # send notification to other counsellor
+                        lead_counsellor = lead.counsellor
+                        new_notification = notifications(user=lead_counsellor,message="Other counsellor searched this phone",phone=phone)
+                        new_notification.save()
+                        err = True
+                        context.update({'err1':err})
+                        return render(request,'user/home.html',context)
+            else:
+                  err=True
+                  context.update({'err2':err})
+                  return render(request,'user/home.html',context) 
+      else:
+            return redirect('user_home')
+      
+def notifications_page(request):
+      all_notifications = notifications.objects.filter(user=request.user)
+      context = {'notifications':all_notifications}
+      return render(request,'user/notifications.html',context)
+
+def mark_read(request,i):
+      n=notifications.objects.get(id=i)
+      n.read=True
+      n.save()
+      return redirect('notifications')
+
+def view_notification_profile(request,i):
+      n=notifications.objects.get(id=i)
+      phone=n.phone
+      global lead
+      lead=Lead.objects.filter(counsellor=request.user).get(phone_number=phone)
+      context={'lead':lead}
+      return render(request,'user/lead_profile.html',context)
+
+def edit_from_profile(request):
+      context = {'lead':lead}
+      return render(request,'user/edit_lead.html',context)
