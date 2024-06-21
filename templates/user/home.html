@@ -3,6 +3,8 @@
 
 
 <style>
+
+
   
 #myBtn {
   display: none;
@@ -23,6 +25,9 @@
 #myBtn:hover {
   background-color: #555;
 }
+
+
+        
 </style>
 <button onclick="topFunction()" id="myBtn" title="Go to top">Move to Top</button>
 
@@ -66,26 +71,18 @@
 </table>
 </div>
 <div class="col-md-6 p-3">
-<canvas id="myChart" style="width: 100%; max-width: 700px;"></canvas>
+<canvas id="myChart" style="width: 100%; max-width: 700px;background-color: white;" class="p-3"></canvas>
 </div>
 </div>
 
 
-
-
-
-<style>
-      .table-responsive {
-        overflow-x: auto;
-      }
-      .table thead th {
-        white-space: nowrap; /* Prevent table header from wrapping */
-      }
-    </style>
     <a href="{% url 'add_lead' %}" class="btn btn-primary mb-2">ADD NEW LEAD</a>
     <!-- search lead with phone  -->
-    <div class="w-25 p-3 border mb-2">
-      <p>Search existing lead with phone number</p>
+
+    <div class="w-25 p-3 border mb-2 bg-light">
+      <p class="text-dark">Search existing lead with phone number</p>
+
+
     <form action="{% url 'search_with_phone' %}" method="post">
       {% csrf_token  %}
       <div class="form-group">
@@ -95,7 +92,22 @@
         <input type="submit" value="Search" class="btn btn-primary mt-2">
       </div>
     </form>
-    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+    <!-- </div> -->
     <!-- end search lead  -->
     <!-- table  -->
     <div class="table-responsive">
@@ -177,7 +189,7 @@
         Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "This lead is not yours... !",
+      text: "A lead already exists with this phone number , notification send to the counsellor...!",
       footer: '<a href="#">Why do I have this issue?</a>'
     });
   </script>
@@ -294,6 +306,7 @@
           title: {
             display: true,
             text: "Current status",
+            color:'#FF0000'
           },
         },
       });

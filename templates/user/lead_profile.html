@@ -43,12 +43,18 @@ body {
 .profile-section p strong {
     color: #000;
 }
+body{
+    background-color: rgb(50,100,100);
+
+
+  color:white;
+}
 
 </style>
 
 
-    <div class="profile-container">
-        <h1>Profile</h1>
+    <div class="profile-container mt-2">
+        <h1>{{lead.name}}</h1>
         <div class="profile-section">
             <h2>Personal Information</h2>
             <p><strong>Name:</strong> {{ lead.name }}</p>

@@ -6,7 +6,6 @@
 <style>
 body {
     /* font-family: Arial, sans-serif; */
-    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
 }
@@ -95,12 +94,12 @@ body {
 
 
 <div class="container">
-      <h2 class="header">Notifications</h2>
+      <h2  class="header">Notifications</h2>
       <ul class="notifications-list">
       {% for n in notifications %}
           <li class="notification-item">
               <div class="notification-header">
-                  <h5 class="notification-title">Notification</h5>
+                  <h5 class="notification-title text-dark">Notification</h5>
                   <div class="notification-time">Date: {{n.date}}<br>Time: {{n.time}}</div>
               </div>
               <p class="notification-description">{{n.message}} Phone : <b>{{n.phone}} <a class="text-info" href="{% url 'view_notification_profile' n.id %}">View profile</a></b></p>
